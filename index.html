@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>S.K Ornaments Invoice System</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+<body>
+    <h1>Welcome to S.K Ornaments Invoice System</h1>
+
+    <!-- Search Customer Form -->
+    <form id="searchCustomerForm">
+        <label for="customerName">Customer Name:</label>
+        <input type="text" id="customerName" required />
+        <button type="submit">Search Customer</button>
+    </form>
+
+    <!-- Display Customer Info -->
+    <div id="customerDetails"></div>
+
+    <!-- Add Purchase Form -->
+    <form id="addPurchaseForm" style="display:none;">
+        <label for="itemName">Item Name:</label>
+        <input type="text" id="itemName" required />
+        <label for="weight">Weight (grams):</label>
+        <input type="number" id="weight" required />
+        <label for="percentage">Percentage of Gold:</label>
+        <input type="number" id="percentage" required />
+        <button type="submit">Add Purchase</button>
+    </form>
+
+    <!-- Generate Invoice Button -->
+    <button id="generateInvoiceButton" style="display:none;">Generate Invoice</button>
+
+    <script>
+        document.getElementById("searchCustomerForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const customerName = document.getElementById("customerName").value;
+
+            fetch(`/search-customer?customerName=${customerName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        const customerDetails = data.customer;
+                        document.getElementById("customerDetails").innerHTML = `Customer: ${customerDetails.name} - Past Balance: ₹${customerDetails.past_balance}`;
+                        document.getElementById("addPurchaseForm").style.display = "block";
+                        document.getElementById("generateInvoiceButton").style.display = "block";
+                        document.getElementById("addPurchaseForm").dataset.customerId = customerDetails.id;
+                    }
+                });
+        });
+
+        document.getElementById("addPurchaseForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const customerId = this.dataset.customerId;
+            const itemName = document.getElementById("itemName").value;
+            const weight = document.getElementById("weight").value;
+            const percentage = document.getElementById("percentage").value;
+
+            fetch('/add-purchase', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customerId, itemName, weight, percentage })
+            }).then(response => response.json())
+              .then(data => {
+                  alert(`New purchase added. Total Balance: ₹${data.newBalance}`);
+              });
+        });
+
+        document.getElementById("generateInvoiceButton").addEventListener("click", function() {
+            const customerId

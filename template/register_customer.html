@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Customer</title>
+</head>
+<body>
+    <h1>Register Customer</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>{{ form.name.label }} {{ form.name() }}</div>
+        <div>{{ form.email.label }} {{ form.email() }}</div>
+        <div>{{ form.submit() }}</div>
+    </form>
+</body>
+</html>
